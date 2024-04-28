@@ -1,0 +1,26 @@
+import React from 'react';
+
+const MediaItem = ({ item, onDownload, onCopy }) => {
+
+    return (
+        <>
+            <div className='m-2 text-center max-w-sm rounded overflow-hidden shadow-lg h-fit bg-slate-100'>
+                <img src={item.portrait} alt={`${item.source}`} className='w-full h-full duration-300 hover:scale-110' loading="lazy" />
+                <div className="flex flex-col m-5">
+                    <div className='p-2 flex gap-4 justify-center'>
+                        <button onClick={() => onCopy(item.url)} className='bg-purple-500 hover:bg-purple-600 text-white py-2 px-4 font-medium rounded-md'>Copy URL</button>
+                        <button className='bg-purple-500 hover:bg-purple-600 text-white py-2 px-4 font-medium rounded-md' onClick={() => onDownload(item.fhd)}>FHD</button>
+                        <button className='bg-purple-500 hover:bg-purple-600 text-white py-2 px-4 font-medium rounded-md' onClick={() => onDownload(item.hd)}>HD</button>
+                    </div>
+                    <div className='p-2 flex gap-4 justify-center'>
+                        <button className='bg-purple-500 hover:bg-purple-600 text-white py-2 px-4 font-medium rounded-md' onClick={() => onDownload(item.sd)}>SD</button>
+                        <button className='bg-purple-500 hover:bg-purple-600 text-white py-2 px-4 font-medium rounded-md' onClick={() => onDownload(item.portrait)}>Portrait</button>
+                        <button className='bg-purple-500 hover:bg-purple-600 text-white py-2 px-4 font-medium rounded-md' onClick={() => onDownload(item.landscape)}>Landscape</button>
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+};
+
+export default MediaItem;
