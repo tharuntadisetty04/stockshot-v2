@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+    font-family: poppins;
+}
+
 #root {
     background-color: #F8FAFC;
     height: 100svh;

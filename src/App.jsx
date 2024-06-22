@@ -13,8 +13,8 @@ const App = () => {
   const [page, setPage] = useState(1);
   const [media, setMedia] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const itemsPerPage = 30;
-  const totalPages = 3;
+  const itemsPerPage = 27;
+  const totalPages = 5;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,7 +25,7 @@ const App = () => {
         const startIndex = (page - 1) * itemsPerPage;
 
         // Fetch images from Pexels
-        const pexelsResponse = await axios.get(
+        const pexelsImageResponse = await axios.get(
           `https://api.pexels.com/v1/search?query=${searchQuery}&per_page=${itemsPerPage}&page=${page}`
           , {
             headers: {
@@ -33,7 +33,7 @@ const App = () => {
             }
           });
 
-        const pexelsImages = pexelsResponse.data.photos.map(photo => ({
+        const pexelsImages = pexelsImageResponse.data.photos.map(photo => ({
           type: 'image',
           id: photo.id,
           fhd: photo.src.large,
@@ -45,10 +45,30 @@ const App = () => {
           source: "Pexels",
         }));
 
-        const combinedImages = [...pexelsImages, ...pexelsImages, ...pexelsImages];
-        const currentPageImages = combinedImages.slice(startIndex, startIndex + itemsPerPage);
+        // Fetch images from Pexels
+        const pexelsVideoResponse = await axios.get(
+          `https://api.pexels.com/videos/search?query=${searchQuery}&per_page=${itemsPerPage}&page=${page}`
+          , {
+            headers: {
+              Authorization: import.meta.env.VITE_PEXELS_API_KEY
+            }
+          });
 
-        setMedia(currentPageImages);
+        const pexelsVideos = pexelsVideoResponse.data.videos.map(video => ({
+          type: 'video',
+          id: video.id,
+          hd_url: video.video_files.find(file => file.quality === 'hd')?.link,
+          sd_url: video.video_files.find(file => file.quality === 'sd')?.link,
+          file_type: video.video_files[0].file_type,
+          user: video.user.name,
+          duration: video.duration,
+          source: "Pexels",
+        }));
+
+        const combinedMedia = [...pexelsImages, ...pexelsImages, ...pexelsImages, ...pexelsVideos, ...pexelsVideos];
+        const currentPageMedia = combinedMedia.slice(startIndex, startIndex + itemsPerPage);
+
+        setMedia(currentPageMedia);
 
         setIsLoading(false);
       } catch (error) {
@@ -68,6 +88,10 @@ const App = () => {
     saveAs(url, 'image.jpg')
   };
 
+  const handleVideoDownload = (url) => {
+    saveAs(url, 'video.mp4')
+  };
+
   const copyToClipboard = (fileUrl) => {
     navigator.clipboard.writeText(fileUrl)
       .then(notify())
@@ -78,13 +102,18 @@ const App = () => {
 
   return (
     <div className="container mx-auto font-poppins">
-      <h1 className="text-center sm:text-4xl text-xl font-semibold py-4 text-purple-500">Pixlr - Stock Images Gallery</h1>
+      <h1 className="text-center sm:text-4xl text-xl font-semibold py-4 text-purple-600">StockShot - Stock Images & Videos</h1>
 
       <div className='flex justify-center items-center flex-col sm:flex-row text-center gap-4 md:mt-1 mb-4'>
         <SearchBar value={searchQuery} onChange={handleSearch} />
+
+        <div className="flex justify-center items-center gap-2">
+          <button className='bg-purple-500 hover:bg-purple-600 text-white py-2 px-4 font-medium rounded-md' onClick={() => setPage(1)} disabled={page === 1}>Images</button>
+          <button className='bg-purple-500 hover:bg-purple-600 text-white py-2 px-4 font-medium rounded-md' onClick={() => setPage(4)}>Videos</button>
+        </div>
       </div>
 
-      {!isLoading && media.length === 0 && <ErrorDisplay message="No Images Found" />}
+      {!isLoading && media.length === 0 && <ErrorDisplay message="No Files Found" />}
 
       <div className='flex justify-center items-center flex-col'>
         {!isLoading && (
@@ -94,7 +123,7 @@ const App = () => {
                 <MediaItem
                   key={item.id}
                   item={item}
-                  onDownload={handleImgDownload}
+                  onDownload={item.type === 'image' ? handleImgDownload : handleVideoDownload}
                   onCopy={copyToClipboard}
                 />
               ))}
