@@ -7,7 +7,7 @@ const MediaItem = ({ item, onDownload, onCopy }) => {
             <div className='m-2 text-center max-w-sm rounded overflow-hidden shadow-lg h-fit bg-slate-100'>
                 {item.type === 'image' ? (
                     <>
-                        <img src={item.portrait} alt={`${item.source} Image`} className='w-full h-full max-h-96 duration-300 hover:scale-110' loading="lazy" />
+                        <img src={item.portrait} alt={`${item.source} Image`} className='w-full h-full max-h-96 duration-300 hover:scale-105 object-cover' loading="lazy" />
 
                         <div className="flex flex-col m-5">
                             <div className='p-2 flex gap-4 justify-center'>
@@ -25,7 +25,7 @@ const MediaItem = ({ item, onDownload, onCopy }) => {
                     </>
                 ) : (
                     <>
-                        <video controls className='w-full max-h-52'>
+                        <video controls className='w-full max-h-52 aspect-video'>
                             <source src={item.hd_url} type={item.file_type} />
                             Your browser does not support the video tag.
                         </video>
